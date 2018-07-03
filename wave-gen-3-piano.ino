@@ -56,24 +56,24 @@ ISR(TIMER1_COMPA_vect) {
   Mask=accTopTemp>>7;
   switch (waveforms) {
     case (1):
-      OCR2B=(Acc>>8)&0x80;        //square 0x80 top
+      OCR2B=(Acc>>8)&0x80;        //soft square top@0x80
     break;
     case (2):
-      OCR2B=Acc>>8;               //sawtooth FF top
+      OCR2B=Acc>>8;               //sawtooth top@FF
     break;
     case (3):
-      OCR2B=accTopTemp^Mask;      //triangle wave 0x0-0x80-0x0
+      OCR2B=accTopTemp^Mask;      //soft triangle wave top@0x80
     break;
-    case (4):                     //sin wave from table 0x0-0xFF
+    case (4):                     //sin wave (table) top@0xFF
       sinVal=pgm_read_byte(&sin_table[accTopTemp^Mask]);
       //test=sin(Acc>8); //uncomment this to understand the weight of floating point math @20Khz
       OCR2B=sinVal^Mask;  
     break;
-    case (5):                     //0x80+0x80|sin| (double frequency)
+    case (5):                     //|sin| (double frequency) top@0xFF
       sinVal=pgm_read_byte(&sin_table[accTopTemp^Mask]);
       OCR2B=sinVal;  
     break;
-    case (6):                     //square  top
+    case (6):                     //square top@FF
       OCR2B=Mask;         
     break;  
     }
@@ -100,104 +100,103 @@ void getInput () {
       // read the incoming byte:
       incomingByte = Serial.read();
       switch (incomingByte) {
-        case (97):
+        case (97):          //a
           note=scale[0];
           noteIndex=0;
         break;
         case (119):
-          note=scale[1];
+          note=scale[1];    //w
           noteIndex=1;
         break;
-        case (115):
-          note=scale[2];
+        case (115):         //b
+          note=scale[2];    
           noteIndex=2;
         break;
-        case (101):
-          note=scale[3];
+        case (101):         //e
+          note=scale[3];    
           noteIndex=3;          
         break;
-        case (100):
-          note=scale[4];
+        case (100):         //d
+          note=scale[4];    
           noteIndex=4;          
         break;
-        case (102):
+        case (102):         //f
           note=scale[5];
           noteIndex=5;          
         break;
-        case (116):
+        case (116):         //t
           note=scale[6];
           noteIndex=6;          
         break;
-        case (103):
+        case (103):         //g
           note=scale[7];
           noteIndex=7;          
         break;
-        case (121):
+        case (121):         //y
           note=scale[8];
           noteIndex=8;          
         break;
-        case (104):
+        case (104):         //h
           note=scale[9];
           noteIndex=9;          
         break;        
         case (117):
-          note=scale[10];
+          note=scale[10];   //u
           noteIndex=10;          
         break;
-        case (106):
+        case (106):         //j
           note=scale[11];
           noteIndex=11;          
         break;
-        case (107):
+        case (107):         //k
           note=scale[12];
           noteIndex=12;          
         break;
-        case (113):
+        case (113):         //q
           note=0;
         break;
-        case (109):
+        case (109):         //m
           if (oct<5) oct++;
         break;
-        case (110):
+        case (110):         //n
           if (oct>0) oct--;
         break;
-        case (122):
+        case (122):         //z
           tempo=tempo+5;
         break;        
-        case (120):
+        case (120):         //x
           tempo=tempo-5;
           if (tempo<30) tempo=30;
         break;
-        case (99):
+        case (99):          //c  
           octRange++;
           if (octRange>4) octRange=1;
         break;
-        case (98): // range arpeggiator
+        case (98):            //b (arpeggiator mode)
           if (arpMode>=2) arpMode=0;
           else arpMode++;
-          Serial.print("wave="+String(waveforms));
         break;
-        case (49):
+        case (49):            //1
                   waveforms=1;
                   Serial.print("wave="+String(waveforms));
         break;
-        case (50):
+        case (50):            //2
                   waveforms=2;
                   Serial.print("wave="+String(waveforms));
         break;
-        case (51):
+        case (51):            //3
                   waveforms=3;
                   Serial.print("wave="+String(waveforms));
         break;
-        case (52):
+        case (52):            //4
                   waveforms=4;
                   Serial.print("wave="+String(waveforms));
         break;
-        case (53):
+        case (53):            //5
                   waveforms=5;
                   Serial.print("wave="+String(waveforms));
         break;
-        case (54):
+        case (54):            //6
                   waveforms=6;
                   Serial.print("wave="+String(waveforms));
         break;
@@ -218,6 +217,5 @@ void loop() {
           }         
          checktime=millis();
         }
-
       getInput();  
    }
